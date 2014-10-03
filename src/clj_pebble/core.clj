@@ -5,13 +5,9 @@
            (com.mitchellbosecke.pebble.template PebbleTemplate))
   (:require [clojure.walk :refer [stringify-keys]]))
 
-(defonce file-loader
-  (DelegatingLoader.
-    [(ClasspathLoader.)
-     (FileLoader.)]))
-
-(defonce string-loader
-  (StringLoader.))
+(defonce classpath-loader (ClasspathLoader.))
+(defonce file-loader (FileLoader.))
+(defonce string-loader (StringLoader.))
 
 (defn- make-pebble-engine []
   (PebbleEngine. file-loader))

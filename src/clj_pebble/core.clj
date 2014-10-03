@@ -32,3 +32,11 @@
 (defn render [^String template-source & [context]]
   (.setLoader @engine string-loader)
   (render-template template-source context))
+
+(defn render-file [^String filename & [context]]
+  (.setLoader @engine file-loader)
+  (render-template filename context))
+
+(defn render-resource [^String filename & [context]]
+  (.setLoader @engine classpath-loader)
+  (render-template filename context))

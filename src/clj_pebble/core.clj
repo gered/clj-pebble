@@ -22,10 +22,13 @@
     (stringify-keys context)
     {}))
 
-(defn render [^String template-source & [context]]
-  (.setLoader @engine string-loader)
-  (if-let [^PebbleTemplate compiled-template (.getTemplate @engine template-source)]
+(defn- render-template [^String template context]
+  (if-let [^PebbleTemplate compiled-template (.getTemplate @engine template)]
     (let [writer  (StringWriter.)
           context (prepare-context-map context)]
       (.evaluate compiled-template writer context)
       (.toString writer))))
+
+(defn render [^String template-source & [context]]
+  (.setLoader @engine string-loader)
+  (render-template template-source context))

@@ -4,7 +4,7 @@
            (com.mitchellbosecke.pebble PebbleEngine)
            (com.mitchellbosecke.pebble.loader ClasspathLoader FileLoader StringLoader)
            (com.mitchellbosecke.pebble.template PebbleTemplate)
-           (com.mitchellbosecke.pebble.extension Function Filter))
+           (com.mitchellbosecke.pebble.extension Function Filter Test))
   (:require [clojure.walk :refer [stringify-keys]]))
 
 (defonce classpath-loader (ClasspathLoader.))
@@ -39,6 +39,12 @@
     (apply [_ input args]
       (apply f (concat [input] (get-sorted-args args))))))
 
+(defn make-test [f]
+  (reify Test
+    (getArgumentNames [_] nil)
+    (apply [_ input args]
+      (boolean (apply f (concat [input] (get-sorted-args args)))))))
+
 (defmacro defpebblefn [fn-name args & body]
   `(let [f#         (fn ~args ~@body)
          pebble-fn# (make-function f#)]
@@ -48,6 +54,11 @@
   `(let [f#         (fn ~args ~@body)
          pebble-fn# (make-filter f#)]
      (.put (.getFilters @engine) ~filter-name pebble-fn#)))
+
+(defmacro defpebbletest [test-name args & body]
+  `(let [f#         (fn ~args ~@body)
+         pebble-fn# (make-test f#)]
+     (.put (.getTests @engine) ~test-name pebble-fn#)))
 
 (defn- prepare-context-map [context]
   (if context

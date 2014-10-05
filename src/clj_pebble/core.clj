@@ -4,7 +4,7 @@
            (com.mitchellbosecke.pebble PebbleEngine)
            (com.mitchellbosecke.pebble.loader ClasspathLoader FileLoader StringLoader)
            (com.mitchellbosecke.pebble.template PebbleTemplate)
-           (com.mitchellbosecke.pebble.extension Function))
+           (com.mitchellbosecke.pebble.extension Function Filter))
   (:require [clojure.walk :refer [stringify-keys]]))
 
 (defonce classpath-loader (ClasspathLoader.))
@@ -33,10 +33,21 @@
     (execute [_ args]
       (apply f (get-sorted-args args)))))
 
+(defn make-filter [f]
+  (reify Filter
+    (getArgumentNames [_] nil)
+    (apply [_ input args]
+      (apply f (concat [input] (get-sorted-args args))))))
+
 (defmacro defpebblefn [fn-name args & body]
   `(let [f#         (fn ~args ~@body)
          pebble-fn# (make-function f#)]
      (.put (.getFunctions @engine) ~fn-name pebble-fn#)))
+
+(defmacro defpebblefilter [filter-name args & body]
+  `(let [f#         (fn ~args ~@body)
+         pebble-fn# (make-filter f#)]
+     (.put (.getFilters @engine) ~filter-name pebble-fn#)))
 
 (defn- prepare-context-map [context]
   (if context

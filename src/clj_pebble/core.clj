@@ -2,9 +2,9 @@
   (:import (java.io StringWriter)
            (java.util Map)
            (com.mitchellbosecke.pebble PebbleEngine)
-           (com.mitchellbosecke.pebble.loader DelegatingLoader ClasspathLoader FileLoader StringLoader)
+           (com.mitchellbosecke.pebble.loader ClasspathLoader FileLoader StringLoader)
            (com.mitchellbosecke.pebble.template PebbleTemplate)
-           (com.mitchellbosecke.pebble.extension Function AbstractExtension Extension))
+           (com.mitchellbosecke.pebble.extension Function))
   (:require [clojure.walk :refer [stringify-keys]]))
 
 (defonce classpath-loader (ClasspathLoader.))

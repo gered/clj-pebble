@@ -2,7 +2,8 @@
   (:import (java.io StringWriter)
            (com.mitchellbosecke.pebble PebbleEngine)
            (com.mitchellbosecke.pebble.loader DelegatingLoader ClasspathLoader FileLoader StringLoader)
-           (com.mitchellbosecke.pebble.template PebbleTemplate))
+           (com.mitchellbosecke.pebble.template PebbleTemplate)
+           (com.mitchellbosecke.pebble.extension Function AbstractExtension Extension))
   (:require [clojure.walk :refer [stringify-keys]]))
 
 (defonce classpath-loader (ClasspathLoader.))
@@ -16,6 +17,25 @@
 
 (defn create-engine! []
   (reset! engine (make-pebble-engine)))
+
+(defn- get-sorted-args [args-map]
+  (->> args-map
+       (map
+         (fn [[k v]]
+           [(Integer/parseInt k) v]))
+       (sort-by first)
+       (map second)))
+
+(defn make-function [f]
+  (reify Function
+    (getArgumentNames [_] nil)
+    (execute [_ args]
+      (apply f (get-sorted-args args)))))
+
+(defmacro defpebblefn [fn-name args & body]
+  `(let [f#         (fn ~args ~@body)
+         pebble-fn# (make-function f#)]
+     (.put (.getFunctions @engine) ~fn-name pebble-fn#)))
 
 (defn prepare-context-map [context]
   (if context

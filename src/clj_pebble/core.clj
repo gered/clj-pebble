@@ -12,11 +12,11 @@
 (defonce string-loader (StringLoader.))
 
 (defn- make-pebble-engine []
-  (PebbleEngine. file-loader))
+  (PebbleEngine. classpath-loader))
 
 (defonce engine (atom (make-pebble-engine)))
 
-(defn create-engine! []
+(defn reset-engine! []
   (reset! engine (make-pebble-engine)))
 
 (defn- get-sorted-args [args-map]

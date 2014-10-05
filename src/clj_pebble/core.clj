@@ -37,7 +37,7 @@
          pebble-fn# (make-function f#)]
      (.put (.getFunctions @engine) ~fn-name pebble-fn#)))
 
-(defn prepare-context-map [context]
+(defn- prepare-context-map [context]
   (if context
     (stringify-keys context)
     {}))

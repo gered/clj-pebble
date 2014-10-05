@@ -1,5 +1,6 @@
 (ns clj-pebble.core
   (:import (java.io StringWriter)
+           (java.util Map)
            (com.mitchellbosecke.pebble PebbleEngine)
            (com.mitchellbosecke.pebble.loader DelegatingLoader ClasspathLoader FileLoader StringLoader)
            (com.mitchellbosecke.pebble.template PebbleTemplate)
@@ -44,8 +45,8 @@
 
 (defn- render-template [^String template context]
   (if-let [^PebbleTemplate compiled-template (.getTemplate @engine template)]
-    (let [writer  (StringWriter.)
-          context (prepare-context-map context)]
+    (let [writer       (StringWriter.)
+          ^Map context (prepare-context-map context)]
       (.evaluate compiled-template writer context)
       (.toString writer))))
 

@@ -56,22 +56,22 @@
 (defonce extensions
   {:functions
    {"path"
-    {:fn (fn [url]
-           (get-context-url url))}
+    (fn [url]
+      (get-context-url url))
 
     "stylesheet"
-    {:fn (fn [url & [media]]
-           (let [fmt           (if media
-                                 "<link href=\"%s\" rel=\"stylesheet\" type=\"text/css\" media=\"%s\" />"
-                                 "<link href=\"%s\" rel=\"stylesheet\" type=\"text/css\" />")
-                 resource-path (get-minified-resource-url url)]
-             (format fmt (get-url-string resource-path) media)))}
+    (fn [url & [media]]
+      (let [fmt           (if media
+                            "<link href=\"%s\" rel=\"stylesheet\" type=\"text/css\" media=\"%s\" />"
+                            "<link href=\"%s\" rel=\"stylesheet\" type=\"text/css\" />")
+            resource-path (get-minified-resource-url url)]
+        (format fmt (get-url-string resource-path) media)))
 
     "javascript"
-    {:fn (fn [url]
-           (let [fmt           "<script type=\"text/javascript\" src=\"%s\"></script>"
-                 resource-path (get-minified-resource-url url)]
-             (format fmt (get-url-string resource-path))))}}
+    (fn [url]
+      (let [fmt           "<script type=\"text/javascript\" src=\"%s\"></script>"
+            resource-path (get-minified-resource-url url)]
+        (format fmt (get-url-string resource-path))))}
 
    :filters
    {}

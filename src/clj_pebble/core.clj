@@ -3,23 +3,45 @@
            (java.util Map)
            (com.mitchellbosecke.pebble PebbleEngine)
            (com.mitchellbosecke.pebble.loader ClasspathLoader FileLoader StringLoader)
-           (com.mitchellbosecke.pebble.template PebbleTemplate))
+           (com.mitchellbosecke.pebble.template PebbleTemplate)
+           (com.google.common.cache Cache CacheBuilder))
   (:require [clojure.walk :refer [stringify-keys]]
             [clj-pebble.extensions :as ext]
-            [clj-pebble.standard-extensions :as std]))
+            [clj-pebble.standard-extensions :as std]
+            [clj-pebble.options :refer [options]]))
 
 (defonce classpath-loader (ClasspathLoader.))
 (defonce file-loader (FileLoader.))
 (defonce string-loader (StringLoader.))
 
+(defn- set-cache! [^PebbleEngine engine size]
+  (.setTemplateCache
+    engine
+    (-> (CacheBuilder/newBuilder)
+        (.maximumSize size)
+        (.build))))
+
+(defn- apply-options! [^PebbleEngine engine]
+  (doseq [[k v] @options]
+    (cond
+      (= :cache k)
+      (set-cache! engine (if v 200 0)))))
+
 (defn- make-pebble-engine []
-  (-> (PebbleEngine. classpath-loader)
-      (ext/add-extensions-library! std/extensions)))
+  (let [engine (-> (PebbleEngine. classpath-loader)
+                   (ext/add-extensions-library! std/extensions))]
+    (apply-options! engine)
+    engine))
 
 (defonce engine (atom (make-pebble-engine)))
 
 (defn reset-engine! []
   (reset! engine (make-pebble-engine)))
+
+(defn set-options! [& opts]
+  (doseq [[k v] (apply hash-map opts)]
+    (swap! options assoc k v))
+  (apply-options! @engine))
 
 (defmacro defpebblefn [fn-name args & body]
   `(let [f# (fn ~args ~@body)]

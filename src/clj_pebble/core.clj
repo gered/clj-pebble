@@ -39,20 +39,20 @@
     {}))
 
 (defn- render-template [^String template context]
-  (if-let [^PebbleTemplate compiled-template (.getTemplate @engine template)]
+  (if-let [^PebbleTemplate compiled-template (.getTemplate ^PebbleEngine @engine template)]
     (let [writer       (StringWriter.)
           ^Map context (prepare-context-map context)]
       (.evaluate compiled-template writer context)
       (.toString writer))))
 
 (defn render [^String template-source & [context]]
-  (.setLoader @engine string-loader)
+  (.setLoader ^PebbleEngine @engine string-loader)
   (render-template template-source context))
 
 (defn render-file [^String filename & [context]]
-  (.setLoader @engine file-loader)
+  (.setLoader ^PebbleEngine @engine file-loader)
   (render-template filename context))
 
 (defn render-resource [^String filename & [context]]
-  (.setLoader @engine classpath-loader)
+  (.setLoader ^PebbleEngine @engine classpath-loader)
   (render-template filename context))

@@ -1,7 +1,8 @@
 (ns clj-pebble.extensions
   (:import (java.util Map)
            (com.mitchellbosecke.pebble PebbleEngine)
-           (com.mitchellbosecke.pebble.extension Function Filter Test)))
+           (com.mitchellbosecke.pebble.extension Function Filter Test))
+  (:require [clj-pebble.convert :refer [java->clojure clojure->java]]))
 
 (defn- get-sorted-args [args-map]
   (->> args-map
@@ -11,23 +12,26 @@
        (sort-by first)
        (map second)))
 
+(defn- convert-args [args-map]
+  (map java->clojure (get-sorted-args args-map)))
+
 (defn make-function [f]
   (reify Function
     (getArgumentNames [_] nil)
     (execute [_ args]
-      (apply f (get-sorted-args args)))))
+      (clojure->java (apply f (convert-args args))))))
 
 (defn make-filter [f]
   (reify Filter
     (getArgumentNames [_] nil)
     (apply [_ input args]
-      (apply f (concat [input] (get-sorted-args args))))))
+      (clojure->java (apply f (concat [input] (convert-args args)))))))
 
 (defn make-test [f]
   (reify Test
     (getArgumentNames [_] nil)
     (apply [_ input args]
-      (boolean (apply f (concat [input] (get-sorted-args args)))))))
+      (boolean (apply f (concat [input] (convert-args args)))))))
 
 (defn add-function! [^PebbleEngine engine ^String name f]
   (.put (.getFunctions engine) name (make-function f)))

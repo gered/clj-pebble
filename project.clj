@@ -1,4 +1,4 @@
-(defproject clj-pebble "0.1.0"
+(defproject clj-pebble "0.2.0"
   :description "Clojure wrapper for the Pebble Java templating engine."
   :url "https://github.com/gered/clj-pebble"
   :license {:name "BSD 3-Clause License"

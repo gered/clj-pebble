@@ -4,7 +4,9 @@
   :license {:name "BSD 3-Clause License"
             :url "http://opensource.org/licenses/BSD-3-Clause"}
   :dependencies [[org.clojure/clojure "1.6.0"]
-                 [com.mitchellbosecke/pebble "1.0.0"]]
+                 [com.mitchellbosecke/pebble "1.0.0"]
+                 [cheshire "5.3.1"]
+                 [org.apache.commons/commons-lang3 "3.3.2"]]
   :profiles {:dev {:dependencies [[pjstadig/humane-test-output "0.6.0"]]
                    :injections   [(require 'pjstadig.humane-test-output)
                                   (pjstadig.humane-test-output/activate!)]}})

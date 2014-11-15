@@ -8,6 +8,7 @@
   (:require [clojure.walk :refer [stringify-keys]]
             [clj-pebble.extensions :as ext]
             [clj-pebble.standard-extensions :as std]
+            [clj-pebble.web.extensions :as web]
             [clj-pebble.options :refer [options]]))
 
 (defonce classpath-loader (ClasspathLoader.))
@@ -29,7 +30,8 @@
 
 (defn- make-pebble-engine []
   (let [engine (-> (PebbleEngine. classpath-loader)
-                   (ext/add-extensions-library! std/extensions))]
+                   (ext/add-extensions-library! std/extensions)
+                   (ext/add-extensions-library! web/extensions))]
     (apply-options! engine)
     engine))
 

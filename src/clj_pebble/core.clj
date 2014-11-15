@@ -57,7 +57,9 @@
 
 (defn- prepare-context-map [context]
   (if context
-    (stringify-keys context)
+    (if (:auto-convert-map-keywords @options)
+      (stringify-keys context)
+      context)
     {}))
 
 (defn- render-template [^String template context]

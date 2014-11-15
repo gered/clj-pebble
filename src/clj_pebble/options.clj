@@ -2,4 +2,5 @@
 
 (defonce options
   (atom
-    {:cache true}))
+    {:cache                     true
+     :auto-convert-map-keywords true}))
